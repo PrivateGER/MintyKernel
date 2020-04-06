@@ -61,6 +61,45 @@ int printf(const char* restrict format, ...) {
 			if (!print(str, len))
 				return -1;
 			written += len;
+		} else if (*format == 'd') {
+			format++;
+
+			const int* number = va_arg(parameters, const int*);
+
+			char* text;
+
+			if(number == 0) { // Number is just 0, dont bother with parsing
+				memset(text, 0, 2);
+				text[0] = 48; // ASCII 48 = "0"
+			} else {
+				int backup = number;
+
+				int numberLength = 0;
+				while (backup > 0) {
+					numberLength++;
+					backup /= 10;
+				}
+				memset(text, 0, numberLength + 1);
+
+				backup = number;
+				int iterator = 0;
+				while (backup > 0) {
+					int digit = backup % 10;
+					text[iterator++] = digit + 48;
+					backup /= 10;
+				}
+
+				reverse(text);
+			}
+
+			size_t len = strlen(text);
+			if (maxrem < len) {
+				// TODO: Set errno to EOVERFLOW.
+				return -1;
+			}
+			if (!print(text, len))
+				return -1;
+			written += len;
 		} else {
 			format = format_begun_at;
 			size_t len = strlen(format);

@@ -9,6 +9,8 @@ extern "C" {
 
 __attribute__((__noreturn__))
 void abort(void);
+int rand(void);
+void srand(unsigned int newSeed);
 
 #ifdef __cplusplus
 }
